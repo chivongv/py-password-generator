@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import sys, getopt
 import string
@@ -8,7 +8,7 @@ class NoPasswordOptionsError(Exception):
     """Raised when all options to generate password are false: uppercase, lowercase, digits, symbols"""
     pass
 
-class PasswordLengthIsZero(Exception):
+class PasswordLengthIsZeroError(Exception):
     """Raised when the generated password length is smaller than or equals to 0. Password length must be greater than 0."""
     pass
 
@@ -28,7 +28,7 @@ def generate_password(length=8, uppercase = True, symbols = True, lowercase = Tr
         raise NoPasswordOptionsError("There must be at least one equals to true of the options: uppercase, lowercase, digits, symbols")
 
     if(length <= 0):
-        raise PasswordLengthIsZero("Password length must be greater than 0.")
+        raise PasswordLengthIsZeroError("Password length must be greater than 0.")
 
     combination = ''
     if(lowercase):
@@ -43,6 +43,8 @@ def generate_password(length=8, uppercase = True, symbols = True, lowercase = Tr
     combination_length = len(combination)
     new_password = ''
     for _ in range(length):
+        # secrets.randbelow works better than random for security purposes
+        # https://docs.python.org/3/library/random.html
         new_password += combination[secrets.randbelow(combination_length)]
     return new_password
 
@@ -113,7 +115,7 @@ def main():
         except NoPasswordOptionsError as e:
             print(e)
             sys.exit(1)
-        except PasswordLengthIsZero as e:
+        except PasswordLengthIsZeroError as e:
             print(e)
             sys.exit(1)
 
